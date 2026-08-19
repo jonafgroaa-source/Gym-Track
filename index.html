@@ -6,19 +6,20 @@
 <title>Registro de Entrenamiento</title>
 <style>
   :root{
-    --bg:#FAFAF8;
-    --surface:#FFFFFF;
-    --surface-2:#F3F2EF;
-    --border:#E7E5E0;
-    --text:#17161A;
-    --text-dim:#8E8B85;
-    --accent:#17161A;
-    --success:#3E8E5D;
-    --success-bg:#EAF3EC;
-    --pr:#B4842A;
-    --day1:#6B8E6B;
-    --day2:#6B84A6;
-    --day3:#B08B4F;
+    --bg:#131215;
+    --surface:#1B1A1E;
+    --surface-2:#242327;
+    --border:#332F35;
+    --text:#ECEAE6;
+    --text-dim:#8F8B92;
+    --accent-bg:#ECEAE6;
+    --accent-fg:#131215;
+    --success:#4CAF77;
+    --success-bg:#1C2B22;
+    --pr:#D9A64A;
+    --day1:#7FAE7F;
+    --day2:#7FA0C9;
+    --day3:#C9A15D;
     --font: -apple-system, "Segoe UI", system-ui, Roboto, Helvetica, Arial, sans-serif;
     --font-mono: ui-monospace, "SF Mono", "Cascadia Code", "Roboto Mono", Menlo, monospace;
   }
@@ -37,7 +38,7 @@
   /* ---------- header ---------- */
   header{
     position:sticky;top:0;z-index:20;
-    background:rgba(250,250,248,0.9);
+    background:rgba(19,18,21,0.85);
     backdrop-filter:blur(8px);
     padding-top:26px;
   }
@@ -75,8 +76,8 @@
     transition:color .15s, border-color .15s;
   }
   .tab .dot{width:6px;height:6px;border-radius:50%;background:currentColor;opacity:.5;flex-shrink:0;}
-  .tab.active{color:var(--text);font-weight:600;border-bottom-color:var(--tab-color, var(--accent));}
-  .tab.active .dot{opacity:1;background:var(--tab-color, var(--accent));}
+  .tab.active{color:var(--text);font-weight:600;border-bottom-color:var(--tab-color, var(--text));}
+  .tab.active .dot{opacity:1;background:var(--tab-color, var(--text));}
 
   .day-heading{
     display:flex;flex-direction:column;gap:9px;
@@ -109,7 +110,7 @@
     cursor:pointer;
     transition:background .15s, border-color .15s;
   }
-  .checkbox.done{background:var(--success);border-color:var(--success);color:#fff;}
+  .checkbox.done{background:var(--success);border-color:var(--success);color:#0e150f;}
 
   .card-main{flex:1;min-width:0;}
   .ex-name{font-size:15px;font-weight:500;line-height:1.3;}
@@ -149,7 +150,7 @@
 
   .save-btn{
     margin-top:12px;width:100%;
-    background:var(--accent);color:#fff;border:none;
+    background:var(--accent-bg);color:var(--accent-fg);border:none;
     font-weight:600;
     font-size:14px;padding:11px;border-radius:8px;cursor:pointer;
     transition:opacity .15s;
@@ -182,11 +183,11 @@
     font-weight:600;font-size:14px;cursor:pointer;
     transition:background .15s, color .15s;
   }
-  .finish-btn:hover{background:var(--text);color:#fff;}
+  .finish-btn:hover{background:var(--accent-bg);color:var(--accent-fg);}
 
   .toast{
     position:fixed;left:50%;bottom:26px;transform:translateX(-50%) translateY(12px);
-    background:var(--text);color:#fff;padding:11px 18px;border-radius:24px;
+    background:var(--accent-bg);color:var(--accent-fg);padding:11px 18px;border-radius:24px;
     font-size:13px;font-weight:500;opacity:0;pointer-events:none;
     transition:opacity .25s, transform .25s;z-index:60;
   }
@@ -194,7 +195,7 @@
 
   /* ---------- bodyweight modal ---------- */
   .overlay{
-    position:fixed;inset:0;background:rgba(20,20,18,0.35);
+    position:fixed;inset:0;background:rgba(0,0,0,0.6);
     display:none;align-items:flex-end;justify-content:center;z-index:50;
   }
   .overlay.show{display:flex;}
@@ -214,7 +215,7 @@
   .bw-form input[type=date]{flex:1.2;}
   .bw-form input[type=number]{flex:1;}
   .bw-form button{
-    background:var(--accent);color:#fff;border:none;border-radius:8px;
+    background:var(--accent-bg);color:var(--accent-fg);border:none;border-radius:8px;
     padding:0 16px;font-weight:600;cursor:pointer;font-size:14px;
   }
   svg.spark{width:100%;height:90px;display:block;margin-bottom:14px;}
@@ -644,7 +645,7 @@
       }).join(' ');
       wrap.innerHTML = `
         <svg class="spark" viewBox="0 0 ${W} ${H}" preserveAspectRatio="none">
-          <polyline points="${pts}" fill="none" stroke="#17161A" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          <polyline points="${pts}" fill="none" stroke="#ECEAE6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
         </svg>`;
     }
 
