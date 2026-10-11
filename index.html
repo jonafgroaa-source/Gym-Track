@@ -100,9 +100,12 @@ body{overflow-x:hidden}
 .entra{animation:entra .45s cubic-bezier(.2,.8,.2,1) both}
 /* Pestañas */
 .tabs{position:fixed;left:0;right:0;bottom:0;z-index:10;display:flex;justify-content:center;padding:0 16px calc(12px + env(safe-area-inset-bottom,0px))}
-.tabs-in{display:flex;gap:4px;width:100%;max-width:520px;padding:6px;border-radius:26px;background:color-mix(in srgb,var(--bg) 82%,transparent);border:1px solid var(--line);backdrop-filter:blur(22px);-webkit-backdrop-filter:blur(22px)}
-.tabs a{flex:1;display:flex;flex-direction:column;align-items:center;gap:2px;padding:9px 4px;border-radius:20px;font-size:12.5px;font-weight:500;color:var(--muted);text-decoration:none;transition:background .3s,color .3s}
-.tabs a.activa{color:#fff;background:linear-gradient(135deg,var(--a1),var(--a2))}
+.tabs-in{position:relative;display:flex;gap:4px;width:100%;max-width:520px;padding:6px;border-radius:26px;background:color-mix(in srgb,var(--bg) 82%,transparent);border:1px solid var(--line);backdrop-filter:blur(22px);-webkit-backdrop-filter:blur(22px)}
+.tabs a{position:relative;z-index:1;flex:1;display:flex;flex-direction:column;align-items:center;gap:2px;padding:9px 4px;border-radius:20px;font-size:12.5px;font-weight:500;color:var(--muted);text-decoration:none;transition:background .3s,color .3s}
+.tabs a.activa{color:#fff}
+.tabs a.activa svg{animation:rebote .55s cubic-bezier(.3,1.5,.5,1)}
+@keyframes rebote{0%{transform:translateY(3px) scale(.75)}100%{transform:none}}
+.tab-ind{position:absolute;top:6px;bottom:6px;left:6px;width:calc((100% - 20px)/3);border-radius:20px;background:linear-gradient(135deg,var(--a1),var(--a2));box-shadow:0 8px 20px -8px var(--a1);transform:translateX(calc(var(--i,0) * (100% + 4px)));transition:transform .5s cubic-bezier(.34,1.2,.5,1)}
 .tabs a:focus-visible{outline:3px solid var(--a1);outline-offset:2px}
 /* Calendario */
 #vista-registro h1{margin-top:28px;margin-bottom:6px}
@@ -121,7 +124,7 @@ body{overflow-x:hidden}
 .leyenda i{display:inline-block;width:10px;height:10px;border-radius:50%;margin-right:6px}
 .detalle{margin-top:14px;background:var(--surface);border:1px solid var(--line);border-radius:20px;padding:16px 18px;backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px)}
 .detalle p{margin:4px 0 0;color:var(--muted)}
-@media (prefers-reduced-motion:reduce){.relleno,.card,.ej-cuerpo,.ej-int,.chev,.tabs a{transition:none}:root{transition:none}.entra{animation:none}}
+@media (prefers-reduced-motion:reduce){.relleno,.card,.ej-cuerpo,.ej-int,.chev,.tabs a{transition:none}:root{transition:none}.entra{animation:none}.tab-ind{transition:none}.tabs a svg{animation:none!important}}
 </style>
 </head>
 <body>
@@ -163,7 +166,7 @@ body{overflow-x:hidden}
   </div>
 </main>
 
-<nav class="tabs" aria-label="Secciones"><div class="tabs-in">
+<nav class="tabs" aria-label="Secciones"><div class="tabs-in"><span class="tab-ind" id="tab-ind"></span>
   <a href="#inicio" data-tab="inicio"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11l9-8 9 8v9a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z"/></svg>Inicio</a>
   <a href="#ejercicios" data-tab="ejercicios"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6.5 6.5v11M17.5 6.5v11M3.5 9v6M20.5 9v6M6.5 12h11"/></svg>Entrenamientos</a>
   <a href="#registro" data-tab="registro"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4.5" width="18" height="16.5" rx="3"/><path d="M3 10h18M8 2.5v4M16 2.5v4"/></svg>Registro</a>
@@ -273,7 +276,7 @@ function pintarInicio(){
   $('entreno').innerHTML =
     '<div class="fila"><span class="etiqueta"><i></i>Entrenamiento ' + k + '</span>' +
     '<span class="flecha"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg></span></div>' +
-    '<h2>' + e.nombre + '</h2><p class="cuenta">' + total + ' ejercicios</p>' +
+    '<h2>' + e.nombre + '</h2>' +
     '<div class="barra"><div class="pista" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="' + pct + '"><div class="relleno" id="rel"></div></div>' +
     '<div class="meta"><span>' + hechos + ' de ' + total + ' completados</span><span>' + pct + '%</span></div></div>';
   requestAnimationFrame(function(){ requestAnimationFrame(function(){ var r=$('rel'); if(r) r.style.width = pct + '%'; }); });
@@ -318,10 +321,10 @@ function pintarEjercicios(){
       '<span class="ej-n">' + x.n + ((x.d || x.s) ? '<small>' + [x.d, x.s].filter(Boolean).join(' · ') + '</small>' : '') + '</span>' +
       '<svg class="chev" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg></button>' +
       '<div class="ej-cuerpo"><div class="ej-int"><div class="pad"><div class="campos">' +
-      '<label>Peso (kg)<input data-u="kg" type="text" inputmode="decimal" placeholder="0" value="' + (r ? fmt(r.kg) : '') + '"></label>' +
-      '<label>Peso (lb)<input data-u="lb" type="text" inputmode="decimal" placeholder="0" value="' + (r ? fmt(r.kg*LB) : '') + '"></label></div>' +
+      '<label>Peso (kg)<input data-u="kg" type="text" inputmode="decimal" placeholder="0"></label>' +
+      '<label>Peso (lb)<input data-u="lb" type="text" inputmode="decimal" placeholder="0"></label></div>' +
       '<button class="guardar" type="button">Guardar peso</button>' +
-      '<p class="ultimo" aria-live="polite">' + (r ? 'Último registro: ' + fmt(r.kg) + ' kg' : '') + '</p></div></div></div></li>';
+      '<p class="ultimo" aria-live="polite">' + (r ? 'Último registro: ' + fmt(r.kg) + ' kg | ' + fmt(r.kg*LB) + ' lb' : '') + '</p></div></div></div></li>';
   }).join('');
 }
 
@@ -350,7 +353,8 @@ $('ej-lista').addEventListener('click', function(ev){
     }
     guardarEstado();
     it.classList.add('hecho'); it.querySelector('.ej-cab b').innerHTML = CHECK;
-    msg.textContent = 'Guardado: ' + fmt(kg) + ' kg / ' + fmt(kg*LB) + ' lb' + (completado ? ' · ¡Entrenamiento completado!' : '');
+    it.querySelectorAll('input').forEach(function(inp){ inp.value = ''; });
+    msg.textContent = 'Último registro: ' + fmt(kg) + ' kg | ' + fmt(kg*LB) + ' lb' + (completado ? ' · ¡Entrenamiento completado!' : '');
     if(completado) setTimeout(pintarEjercicios, 1600);
   }
 });
@@ -391,6 +395,7 @@ function ruta(){
     b.classList.toggle('activa', t === h);
     if(t === h) b.setAttribute('aria-current', 'page'); else b.removeAttribute('aria-current');
   });
+  $('tab-ind').style.setProperty('--i', orden.indexOf(h));
   if(h !== VISTA) animar($('vista-' + h), dir > 0 ? 28 : -28);
   VISTA = h;
   window.scrollTo(0,0);
