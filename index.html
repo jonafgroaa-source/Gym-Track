@@ -26,9 +26,11 @@
 html{scroll-padding-top:env(safe-area-inset-top,0px)}
 *{box-sizing:border-box}
 body{margin:0;min-height:100vh;color:var(--ink);font-family:Outfit,system-ui,sans-serif;font-size:17px;line-height:1.5;
-  background:radial-gradient(60% 40% at 90% 0%,var(--glow1),transparent 70%),radial-gradient(50% 35% at 0% 25%,var(--glow2),transparent 70%),var(--bg);
-  background-attachment:fixed}
-main{max-width:520px;margin:0 auto;padding:28px 20px 120px}
+  background:var(--bg)}
+body::before{content:'';position:fixed;inset:0;z-index:-1;pointer-events:none;background:radial-gradient(60% 40% at 90% 0%,var(--glow1),transparent 70%),radial-gradient(50% 35% at 0% 25%,var(--glow2),transparent 70%)}
+html,body{scrollbar-width:none;-ms-overflow-style:none}
+html::-webkit-scrollbar,body::-webkit-scrollbar{display:none;width:0;height:0}
+main{max-width:520px;margin:0 auto;padding:28px 20px calc(130px + env(safe-area-inset-bottom,0px))}
 [hidden]{display:none!important}
 .clock{display:flex;justify-content:space-between;align-items:center;gap:12px}
 #fecha{text-transform:capitalize;color:var(--muted);font-weight:500;font-size:15px}
@@ -116,8 +118,10 @@ body{overflow-x:hidden}
 @keyframes entra{from{opacity:0;transform:translateX(var(--dx,0px))}to{opacity:1;transform:none}}
 .entra{animation:entra .45s cubic-bezier(.2,.8,.2,1) both}
 /* Pestañas */
-.tabs{position:fixed;left:0;right:0;bottom:0;z-index:10;display:flex;justify-content:center;padding:0 16px calc(12px + env(safe-area-inset-bottom,0px))}
-.tabs-in{position:relative;display:flex;gap:4px;width:100%;max-width:520px;padding:6px;border-radius:26px;background:color-mix(in srgb,var(--bg) 82%,transparent);border:1px solid var(--line);backdrop-filter:blur(22px);-webkit-backdrop-filter:blur(22px)}
+.tabs{position:fixed;left:0;right:0;bottom:0;z-index:10;display:flex;justify-content:center;padding:0 16px calc(12px + env(safe-area-inset-bottom,0px));transform:translate3d(0,0,0);transition:transform .35s cubic-bezier(.2,.8,.2,1),opacity .25s ease}
+.tabs::before{content:'';position:absolute;left:0;right:0;bottom:0;height:calc(100% + 30px);background:linear-gradient(to top,var(--bg) 55%,transparent);pointer-events:none;z-index:-1}
+.tabs.oculta{transform:translate3d(0,140%,0);opacity:0;pointer-events:none}
+.tabs-in{position:relative;display:flex;gap:4px;width:100%;max-width:520px;padding:6px;border-radius:26px;background:color-mix(in srgb,var(--bg) 94%,transparent);border:1px solid var(--line);backdrop-filter:blur(22px);-webkit-backdrop-filter:blur(22px)}
 .tabs a{position:relative;z-index:1;flex:1;display:flex;flex-direction:column;align-items:center;gap:2px;padding:9px 4px;border-radius:20px;font-size:12.5px;font-weight:500;color:var(--muted);text-decoration:none;transition:background .3s,color .3s}
 .tabs a.activa{color:#fff}
 .tabs a.activa svg{animation:rebote .55s cubic-bezier(.3,1.5,.5,1)}
@@ -455,6 +459,7 @@ function cerrarCelebracion(){
 }
 $('celebra').addEventListener('click', cerrarCelebracion);
 
+
 var VISTA = 'inicio';
 function animar(el, dx){ el.style.setProperty('--dx', dx + 'px'); el.classList.remove('entra'); void el.offsetWidth; el.classList.add('entra'); }
 
@@ -488,6 +493,9 @@ $('mes-ant').addEventListener('click', function(){ MES.setMonth(MES.getMonth() -
 $('mes-sig').addEventListener('click', function(){ MES.setMonth(MES.getMonth() + 1); pintarRegistro(); });
 $('cal-grid').addEventListener('click', function(ev){ var b = ev.target.closest('.dia'); if(b){ SEL = b.dataset.d; pintarRegistro(); } });
 $('leyenda').innerHTML = Object.keys(ENTRENOS).map(function(key){ var c = ENTRENOS[key].c; return '<li><i style="background:linear-gradient(135deg,' + c[0] + ',' + c[1] + ')"></i>' + key + ' · ' + ENTRENOS[key].nombre + '</li>'; }).join('');
+// Oculta la barra de pestañas mientras se escribe (evita que salte sobre el teclado)
+document.addEventListener('focusin', function(ev){ if(ev.target.matches && ev.target.matches('input')) document.querySelector('.tabs').classList.add('oculta'); });
+document.addEventListener('focusout', function(){ setTimeout(function(){ var a = document.activeElement; if(!(a && a.matches && a.matches('input'))) document.querySelector('.tabs').classList.remove('oculta'); }, 80); });
 window.addEventListener('hashchange', ruta);
 
 $('frase').textContent = FRASES[Math.floor(Math.random()*FRASES.length)];
